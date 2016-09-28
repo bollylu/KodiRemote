@@ -33,10 +33,7 @@ namespace KodiRemoteLib {
     }
 
     public async Task<string> Execute(KodiRpcBase kodiRequest) {
-      Dictionary<string, string> Parameters = new Dictionary<string, string>();
-      Parameters.Add("jsonrpc", "2.0");
-      Parameters.Add("method", $"{kodiRequest.RpcFullname}");
-      Parameters.Add("id", "1");
+      
 
       using (HttpClient Client = new HttpClient()) {
         Client.BaseAddress = new Uri($"http://{DnsName}:{Port}");
