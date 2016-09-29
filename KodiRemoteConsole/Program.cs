@@ -22,12 +22,16 @@ namespace KodiRemoteConsole {
 
       Trace.WriteLine($"Kodi player {Player.Name} is named {Player.DnsName} and its IP is {Player.Ip.AddressList.First().MapToIPv4().ToString()}");
 
-      string Test;
+      Kodi_ActivePlayer CurrentPlayer =  KodiRpc.RPC_Player_GetActivePlayer.Execute(Player).Result;
+      Trace.WriteLine($"Player {CurrentPlayer.PlayerId} of type {CurrentPlayer.PlayerType} is playing");
 
-      Test = Player.Execute(new Player_GetActivePlayers(3320)).Result;
+      KodiRpc.RPC_Player_PlayPause.Execute(Player);
+
+
+
       //Test = Player.Execute(new PlayList_GetPlayLists()).Result;
 
-      Test = Player.Execute(new Player_Play(0)).Result;
+      //Test = Player.Execute<string>(new Player_Play(CurrentPlayer.PlayerId)).Result;
       //Thread.Sleep(5000);
       //Test = Player.Execute(new Player_SetPartyMode()).Result;
 

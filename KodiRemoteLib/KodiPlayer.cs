@@ -7,9 +7,12 @@ using BLTools;
 using System.Net;
 using System.Net.Http;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace KodiRemoteLib {
-  public class KodiPlayer {
+  public class KodiPlayer : IKodiPlayer {
 
     public string Name { get; set; }
     public string DnsName { get; set; }
@@ -38,9 +41,9 @@ namespace KodiRemoteLib {
       return false;
     }
 
-    public async Task<string> Execute(JsonRpcBase kodiRequest) {
+    public async Task<T> Execute<T>(JsonRpcBase kodiRequest) {
 
-      Trace.WriteLine($"Execution request : {kodiRequest.RpcFullname}");
+      Trace.WriteLine($"Execution request : {kodiRequest.JsonRpcFullname}");
       using (HttpClientHandler Handler = new HttpClientHandler()) {
         Handler.ClientCertificateOptions = ClientCertificateOption.Automatic;
         //Handler.Credentials = CredentialCache.DefaultNetworkCredentials;
@@ -49,50 +52,33 @@ namespace KodiRemoteLib {
           Client.BaseAddress = BaseUri;
 
 
-          HttpRequestMessage Request = new HttpRequestMessage(HttpMethod.Post, $"jsonrpc?{kodiRequest.RpcFullname}");
-          Request.Content = new StringContent(ToJson(kodiRequest.RequestParameters), Encoding.UTF8, "application/json");
+          HttpRequestMessage Request = new HttpRequestMessage(HttpMethod.Post, $"jsonrpc?{kodiRequest.JsonRpcFullname}");
+          string JsonContent = kodiRequest.RequestParameters.ToJson();
 
-          Trace.WriteLine($"Content={ToJson(kodiRequest.RequestParameters)}");
+          Request.Content = new StringContent(JsonContent, Encoding.UTF8, "application/json");
+
+          Trace.WriteLine($"Content={JsonContent}");
 
           HttpResponseMessage Response = await Client.SendAsync(Request);
 
-          string RetVal = await Response.Content.ReadAsStringAsync();
-          Trace.WriteLine($"Response : {RetVal}");
-          return RetVal;
+          string ResponseAsString = await Response.Content.ReadAsStringAsync();
+
+          Trace.WriteLine($"Response : {ResponseAsString}");
+
+          var JsonResult = JObject.Parse(ResponseAsString);
+
+          switch (typeof(T).Name) {
+            case "Kodi_ActivePlayer":
+              Kodi_ActivePlayer RetVal = new Kodi_ActivePlayer();
+              RetVal.PlayerId = (int)JsonResult.SelectToken("result[0].playerid");
+              RetVal.PlayerType = (string)JsonResult.SelectToken("result[0].type");
+              return (T)Convert.ChangeType(RetVal, typeof(T));
+          }
+
+          return default(T);
         }
       }
     }
 
-    private string ToJson(Dictionary<string, object> source) {
-      if (source == null || source.Count == 0) {
-        return "{}";
-      }
-      StringBuilder RetVal = new StringBuilder("{");
-      foreach (KeyValuePair<string, object> KVPItem in source) {
-        if (KVPItem.Value.GetType().IsGenericType) {
-          RetVal.Append($"\"{KVPItem.Key}\" : ");
-          RetVal.Append(ToJson((KVPItem.Value as Dictionary<string, object>)));
-          RetVal.Append(", ");
-          continue;
-        }
-
-        switch (KVPItem.Value.GetType().Name.ToLower()) {
-          case "int32":
-            RetVal.Append($"\"{KVPItem.Key}\" : {KVPItem.Value}, ");
-            break;
-          case "boolean":
-          case "bool":
-            RetVal.Append($"\"{KVPItem.Key}\" : {KVPItem.Value.ToString().ToLower()}, ");
-            break;
-          default:
-            RetVal.Append($"\"{KVPItem.Key}\" : \"{KVPItem.Value}\", ");
-            break;
-        }
-
-      }
-      RetVal.Truncate(2);
-      RetVal.Append("}");
-      return RetVal.ToString();
-    }
   }
 }

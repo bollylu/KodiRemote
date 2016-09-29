@@ -8,9 +8,10 @@ using Newtonsoft.Json;
 namespace KodiRemoteLib {
   public class JSonRPC_GetConfiguration : JsonRpcBase {
     
-    public override string RpcNamespace { get { return "JSONRPC"; } }
-    public override string RpcMethod { get { return "GetConfiguration"; } }
+    public override string JsonRpcNamespace { get { return "JSONRPC"; } }
+    public override string JsonRpcMethod { get { return "GetConfiguration"; } }
     
     public JSonRPC_GetConfiguration() : base() { }
+
   }
 }

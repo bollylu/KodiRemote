@@ -8,10 +8,10 @@ using Newtonsoft.Json;
 namespace KodiRemoteLib {
   public class Player_Play : JsonRpcBase {
 
-    public override string RpcNamespace { get { return "Player"; } }
-    public override string RpcMethod { get { return "PlayPause"; } }
+    public override string JsonRpcNamespace { get { return "Player"; } }
+    public override string JsonRpcMethod { get { return "PlayPause"; } }
 
-    public Player_Play(int playerId = 1) : base(1) {
+    public Player_Play(int playerId = 1) : base() {
       KodiParameters.Add("playerid", playerId);
       KodiParameters.Add("play", true);
     }

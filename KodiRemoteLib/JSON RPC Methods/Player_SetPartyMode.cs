@@ -8,10 +8,10 @@ using Newtonsoft.Json;
 namespace KodiRemoteLib {
   public class Player_SetPartyMode : JsonRpcBase {
 
-    public override string RpcNamespace { get { return "Player"; } }
-    public override string RpcMethod { get { return "Open"; } }
+    public override string JsonRpcNamespace { get { return "Player"; } }
+    public override string JsonRpcMethod { get { return "Open"; } }
 
-    public Player_SetPartyMode(int id = 1) : base(id) {
+    public Player_SetPartyMode(int id = 1) : base() {
 
       KodiParameters.Add("item", (new Dictionary<string, object>() { { "partymode", "music"} }));
 

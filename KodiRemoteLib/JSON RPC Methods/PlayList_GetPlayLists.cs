@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace KodiRemoteLib {
   public class PlayList_GetPlayLists : JsonRpcBase {
 
-    public override string RpcNamespace { get { return "PlayList"; } }
-    public override string RpcMethod { get { return "GetPlayLists"; } }
+    public override string JsonRpcNamespace { get { return "PlayList"; } }
+    public override string JsonRpcMethod { get { return "GetPlayLists"; } }
     
-    public PlayList_GetPlayLists(int id = 1) : base (id) {
+    public PlayList_GetPlayLists(int id = 1) : base () {
     }
   }
 }
