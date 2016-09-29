@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BLTools;
 using System.Net;
 using System.Net.Http;
+using System.Diagnostics;
 
 namespace KodiRemoteLib {
   public class KodiPlayer {
@@ -14,10 +15,15 @@ namespace KodiRemoteLib {
     public string DnsName { get; set; }
     public IPHostEntry Ip { get; set; }
     public int Port { get; set; }
+    public Uri BaseUri {
+      get {
+        return new Uri($"http://{DnsName}:{Port}");
+      }
+    }
 
     public KodiPlayer() { }
 
-    public KodiPlayer(string name, string dnsName, int port=8080) {
+    public KodiPlayer(string name, string dnsName, int port = 8080) {
       Initialize(name, dnsName, port);
     }
 
@@ -32,30 +38,59 @@ namespace KodiRemoteLib {
       return false;
     }
 
-    public async Task<string> Execute(KodiRpcBase kodiRequest) {
-      
+    public async Task<string> Execute(JsonRpcBase kodiRequest) {
 
-      using (HttpClient Client = new HttpClient()) {
-        Client.BaseAddress = new Uri($"http://{DnsName}:{Port}");
+      Trace.WriteLine($"Execution request : {kodiRequest.RpcFullname}");
+      using (HttpClientHandler Handler = new HttpClientHandler()) {
+        Handler.ClientCertificateOptions = ClientCertificateOption.Automatic;
+        //Handler.Credentials = CredentialCache.DefaultNetworkCredentials;
+        Handler.UseDefaultCredentials = true;
+        using (HttpClient Client = new HttpClient(Handler)) {
+          Client.BaseAddress = BaseUri;
 
-        HttpRequestMessage Request = new HttpRequestMessage(HttpMethod.Post, "jsonrpc");
-        Request.Content = new StringContent(ToJson(Parameters), Encoding.UTF8, "application/json");
 
-        HttpResponseMessage Response = await Client.SendAsync(Request, HttpCompletionOption.ResponseContentRead);
+          HttpRequestMessage Request = new HttpRequestMessage(HttpMethod.Post, $"jsonrpc?{kodiRequest.RpcFullname}");
+          Request.Content = new StringContent(ToJson(kodiRequest.RequestParameters), Encoding.UTF8, "application/json");
 
-        return await Response.Content.ReadAsStringAsync();
+          Trace.WriteLine($"Content={ToJson(kodiRequest.RequestParameters)}");
+
+          HttpResponseMessage Response = await Client.SendAsync(Request);
+
+          string RetVal = await Response.Content.ReadAsStringAsync();
+          Trace.WriteLine($"Response : {RetVal}");
+          return RetVal;
+        }
       }
     }
 
-    private string ToJson(Dictionary<string,string> source) {
-      if (source==null ||source.Count==0) {
+    private string ToJson(Dictionary<string, object> source) {
+      if (source == null || source.Count == 0) {
         return "{}";
       }
       StringBuilder RetVal = new StringBuilder("{");
-      foreach(KeyValuePair<string, string> KVPItem in source) {
-        RetVal.Append($"\"{KVPItem.Key}\" : \"{KVPItem.Value}\",");
+      foreach (KeyValuePair<string, object> KVPItem in source) {
+        if (KVPItem.Value.GetType().IsGenericType) {
+          RetVal.Append($"\"{KVPItem.Key}\" : ");
+          RetVal.Append(ToJson((KVPItem.Value as Dictionary<string, object>)));
+          RetVal.Append(", ");
+          continue;
+        }
+
+        switch (KVPItem.Value.GetType().Name.ToLower()) {
+          case "int32":
+            RetVal.Append($"\"{KVPItem.Key}\" : {KVPItem.Value}, ");
+            break;
+          case "boolean":
+          case "bool":
+            RetVal.Append($"\"{KVPItem.Key}\" : {KVPItem.Value.ToString().ToLower()}, ");
+            break;
+          default:
+            RetVal.Append($"\"{KVPItem.Key}\" : \"{KVPItem.Value}\", ");
+            break;
+        }
+
       }
-      RetVal.Truncate(1);
+      RetVal.Truncate(2);
       RetVal.Append("}");
       return RetVal.ToString();
     }

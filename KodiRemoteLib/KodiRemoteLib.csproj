@@ -49,8 +49,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="KodiPlayer.cs" />
-    <Compile Include="KodiRpcBase.cs" />
-    <Compile Include="Player_StartPartyMode.cs" />
+    <Compile Include="JsonRpcBase.cs" />
+    <Compile Include="JSonRPC_GetConfiguration.cs" />
+    <Compile Include="Player_Pause.cs" />
+    <Compile Include="Player_Play.cs" />
+    <Compile Include="Player_PlayPause.cs" />
+    <Compile Include="PlayList_GetPlayLists.cs" />
+    <Compile Include="Player_SetPartyMode.cs" />
     <Compile Include="Player_GetActivePlayers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
