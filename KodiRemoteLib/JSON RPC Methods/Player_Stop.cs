@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace KodiRemoteLib {
-  public class Player_Play : JsonRpcRequestBase {
+  public class Player_Stop : JsonRpcRequestBase {
 
     public override string JsonRpcNamespace { get { return "Player"; } }
-    public override string JsonRpcMethod { get { return "PlayPause"; } }
+    public override string JsonRpcMethod { get { return "Stop"; } }
 
-    public Player_Play(int playerId = 1) : base() {
+    public Player_Stop(int playerId = 1) : base() {
       KodiParameters.Add("playerid", playerId);
-      KodiParameters.Add("play", true);
     }
   }
 }

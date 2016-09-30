@@ -51,9 +51,14 @@
     <Compile Include="Interfaces\IKodiJsonRequest.cs" />
     <Compile Include="Interfaces\IKodiJsonResponse.cs" />
     <Compile Include="Interfaces\IKodiPlayer.cs" />
+    <Compile Include="JSON RPC Methods\Player_GetItem.cs" />
+    <Compile Include="JSON RPC Methods\Player_Stop.cs" />
+    <Compile Include="JSON RPC Responses\JsonRpcResponseBase.cs" />
+    <Compile Include="JSON RPC Responses\JsonRpcResponseEmpty.cs" />
+    <Compile Include="JSON RPC Responses\KodiResponse_CurrentlyPlayedItem.cs" />
     <Compile Include="JsonExtensionMethods.cs" />
     <Compile Include="KodiPlayer.cs" />
-    <Compile Include="JsonRpcBase.cs" />
+    <Compile Include="JSON RPC Methods\JsonRpcRequestBase.cs" />
     <Compile Include="JSON RPC Methods\JSonRPC_GetConfiguration.cs" />
     <Compile Include="JSON RPC Methods\Player_Pause.cs" />
     <Compile Include="JSON RPC Methods\Player_Play.cs" />
@@ -62,7 +67,7 @@
     <Compile Include="JSON RPC Methods\Player_SetPartyMode.cs" />
     <Compile Include="JSON RPC Methods\Player_GetActivePlayers.cs" />
     <Compile Include="KodiRpc.cs" />
-    <Compile Include="Kodi_ActivePlayer.cs" />
+    <Compile Include="JSON RPC Responses\KodiResponse_ActivePlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

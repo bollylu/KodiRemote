@@ -7,5 +7,6 @@ using System.Threading.Tasks;
 namespace KodiRemoteLib {
   public interface IKodiJsonResponse {
     string JsonRpcVersion { get; }
+    void Initialize(string jsonData);
   }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace KodiRemoteLib {
-  public class Player_SetPartyMode : JsonRpcBase {
+  public class Player_SetPartyMode : JsonRpcRequestBase {
 
     public override string JsonRpcNamespace { get { return "Player"; } }
     public override string JsonRpcMethod { get { return "Open"; } }
@@ -16,5 +16,6 @@ namespace KodiRemoteLib {
       KodiParameters.Add("item", (new Dictionary<string, object>() { { "partymode", "music"} }));
 
     }
+    
   }
 }

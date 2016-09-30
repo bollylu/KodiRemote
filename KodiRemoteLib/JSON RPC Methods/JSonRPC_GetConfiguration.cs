@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace KodiRemoteLib {
-  public class JSonRPC_GetConfiguration : JsonRpcBase {
+  public class JSonRPC_GetConfiguration : JsonRpcRequestBase {
     
     public override string JsonRpcNamespace { get { return "JSONRPC"; } }
     public override string JsonRpcMethod { get { return "GetConfiguration"; } }

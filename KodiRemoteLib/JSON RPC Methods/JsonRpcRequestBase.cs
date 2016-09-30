@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Net.Http;
 
 namespace KodiRemoteLib {
-  public abstract class JsonRpcBase : IKodiJsonRequest {
+  public abstract class JsonRpcRequestBase : IKodiJsonRequest {
 
     public virtual string JsonRpcVersion { get { return "2.0"; } }
     public abstract string JsonRpcNamespace { get; }
@@ -20,7 +20,7 @@ namespace KodiRemoteLib {
       }
     }
 
-    public Dictionary<string, object> RequestParameters {
+    public virtual Dictionary<string, object> RequestParameters {
       get {
         if (_RequestParameters==null) {
           _RequestParameters = new Dictionary<string, object>();
@@ -37,7 +37,7 @@ namespace KodiRemoteLib {
         return TempParameters;
       }
     }
-    private Dictionary<string, object> _RequestParameters;
+    protected Dictionary<string, object> _RequestParameters;
 
     public Dictionary<string, object> KodiParameters { get; } = new Dictionary<string, object>();
 
@@ -46,7 +46,20 @@ namespace KodiRemoteLib {
     private int NextId() {
       return ++Id;
     }
-    public JsonRpcBase() {
+    public JsonRpcRequestBase() {
+    }
+
+    public virtual async Task<T> Execute<T>(IKodiPlayer player) where T : IKodiJsonResponse, new() {
+
+      string Data = await GetResponseString(player).ConfigureAwait(false);
+      if (typeof(T).Name.ToLower() == "jsonrpcresponseempty") {
+        return default(T);
+      }
+
+      T RetVal = new T();
+      RetVal.Initialize(Data);
+      return RetVal;
+
     }
 
     protected async Task<string> GetResponseString(IKodiPlayer player) {
@@ -64,10 +77,14 @@ namespace KodiRemoteLib {
           Request.Content = new StringContent(JsonContent, Encoding.UTF8, "application/json");
 
           Trace.WriteLine($"Content={JsonContent}");
+          string ResponseAsString="";
 
-          HttpResponseMessage Response = await Client.SendAsync(Request);
-
-          string ResponseAsString = await Response.Content.ReadAsStringAsync();
+          try {
+            HttpResponseMessage Response = await Client.SendAsync(Request).ConfigureAwait(false);
+            ResponseAsString = await Response.Content.ReadAsStringAsync();
+          } catch (Exception ex) {
+            Trace.WriteLine($"Problem during HTTP command : {ex.Message}");
+          }
 
           Trace.WriteLine($"Response : {ResponseAsString}");
 

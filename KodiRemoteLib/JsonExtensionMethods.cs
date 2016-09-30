@@ -24,6 +24,16 @@ namespace KodiRemoteLib {
           continue;
         }
 
+        if (KVPItem.Value.GetType().IsArray) {
+          RetVal.Append($"\"{KVPItem.Key}\" : [");
+          foreach(var ArrayItem in KVPItem.Value as IEnumerable<object>) {
+            RetVal.Append($"\"{ArrayItem.ToString()}\", ");
+          }
+          RetVal.Truncate(2);
+          RetVal.Append("], ");
+          continue;
+        }
+
         switch (KVPItem.Value.GetType().Name.ToLower()) {
           case "int32":
             RetVal.Append($"\"{KVPItem.Key}\" : {KVPItem.Value}, ");
