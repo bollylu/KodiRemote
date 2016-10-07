@@ -29,11 +29,13 @@ namespace KodiRemoteWpf {
     #endregion Public static variables
 
     #region Public properties
-    //public MainViewModel MainWindowViewModel { get; set; }
+    public MainViewModel MainWindowViewModel { get; set; }
     #endregion Public properties
 
     public MainWindow() {
       InitializeComponent();
+      MainWindowViewModel = new MainViewModel();
+      this.DataContext = MainWindowViewModel;
     }
 
     private void mnuFileQuit_Click(object sender, RoutedEventArgs e) {

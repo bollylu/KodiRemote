@@ -4,15 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KodiRemoteWpf"
+        xmlns:clr="clr-namespace:System;assembly=mscorlib"
         xmlns:bltools="clr-namespace:BLTools.WPF.Controls;assembly=BLTools.WPF.Controls.45"
         mc:Ignorable="d"
-        Title="KodiRemote" Height="800" Width="400">
+        Title="KodiRemote"
+        Height="800"
+        Width="400">
   <Window.Resources>
-    <!--<local:MainViewModel x:Key="FakeMainWiewModel" />-->
+    <clr:String x:Key="ImageNotFound">ImageNotFound</clr:String>
+    <local:MainViewModel x:Key="FakeMainWiewModel" />
+
   </Window.Resources>
 
-  <!--<Grid d:DataContext="{Binding Source={StaticResource FakeMainWiewModel}}">-->
-  <Grid>
+  <Grid d:DataContext="{Binding Source={StaticResource FakeMainWiewModel}}">
 
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
@@ -68,6 +72,72 @@
 
     <Grid Grid.Row="1">
 
+      <Grid.RowDefinitions>
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+      </Grid.RowDefinitions>
+
+      <Grid Grid.Row="0">
+
+      </Grid>
+
+      <Grid Grid.Row="1">
+        <Border BorderBrush="Aquamarine"
+                BorderThickness="1"
+                Margin="5">
+          <Image Source="{Binding Path=CurrentPicture}"
+                 Margin="5"
+                 Stretch="Uniform" />
+        </Border>
+      </Grid>
+
+      <Grid Grid.Row="2">
+
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Button Grid.Column="0" Margin="10" VerticalAlignment="Center">
+          <Button.Template>
+            <ControlTemplate>
+              <Image Source="{Binding Path=PictureButtonPrevious}" />
+            </ControlTemplate>
+          </Button.Template>
+        </Button>
+
+        <Button Grid.Column="1" Margin="10"
+                VerticalAlignment="Center">
+          <Button.Template>
+            <ControlTemplate>
+              <Image Source="{Binding Path=PictureButtonPlay}" />
+            </ControlTemplate>
+          </Button.Template>
+        </Button>
+
+        <Button Grid.Column="2"
+                Margin="10"
+                VerticalAlignment="Center">
+          <Button.Template>
+            <ControlTemplate>
+              <Image Source="{Binding Path=PictureButtonStop}" />
+            </ControlTemplate>
+          </Button.Template>
+        </Button>
+
+        <Button Grid.Column="3"
+                Margin="10"
+                VerticalAlignment="Center">
+          <Button.Template>
+            <ControlTemplate>
+              <Image Source="{Binding Path=PictureButtonNext}" />
+            </ControlTemplate>
+          </Button.Template>
+        </Button>
+      </Grid>
     </Grid>
 
     <bltools:ExtendedStatusBar x:Name="stsBar"

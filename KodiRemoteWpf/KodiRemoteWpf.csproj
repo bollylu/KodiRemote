@@ -75,6 +75,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MainViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -107,6 +108,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KodiRemoteLib\KodiRemoteLib.csproj">
+      <Project>{bfa34556-1692-4246-8ae1-f2f514bb8a19}</Project>
+      <Name>KodiRemoteLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Pictures\ImageNotFound.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Pictures\ButtonNext.png" />
+    <Resource Include="Pictures\ButtonPause.png" />
+    <Resource Include="Pictures\ButtonPrevious.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Pictures\ButtonPlay.png" />
+    <Resource Include="Pictures\ButtonStop.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
