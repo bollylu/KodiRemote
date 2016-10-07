@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 
 namespace KodiRemoteLib {
-  public abstract class JsonRpcRequestBase : IKodiJsonRequest {
+  public abstract class JsonRpcRequestBase : IKodiJsonRequest, ICriticalNotifyCompletion {
 
     public virtual string JsonRpcVersion { get { return "2.0"; } }
     public abstract string JsonRpcNamespace { get; }
@@ -49,27 +50,28 @@ namespace KodiRemoteLib {
     public JsonRpcRequestBase() {
     }
 
-    public virtual async Task<T> Execute<T>(IKodiPlayer player) where T : IKodiJsonResponse, new() {
+    public virtual Task<T> Execute<T>(IKodiStation station) where T : IKodiJsonResponse, new() {
 
-      string Data = await GetResponseString(player).ConfigureAwait(false);
-      if (typeof(T).Name.ToLower() == "jsonrpcresponseempty") {
-        return default(T);
+      string Data = GetResponseString(station).Result;
+      if (typeof(T).Name == typeof(JsonRpcResponseEmpty).Name) {
+        return Task.FromResult<T>(default(T)) ;
       }
 
+      
       T RetVal = new T();
       RetVal.Initialize(Data);
-      return RetVal;
+      return Task.FromResult<T>(RetVal);
 
     }
 
-    protected async Task<string> GetResponseString(IKodiPlayer player) {
+    protected async Task<string> GetResponseString(IKodiStation station) {
 
       Trace.WriteLine($"Execution request : {JsonRpcFullname}");
       using (HttpClientHandler Handler = new HttpClientHandler()) {
         Handler.ClientCertificateOptions = ClientCertificateOption.Automatic;
         Handler.UseDefaultCredentials = true;
         using (HttpClient Client = new HttpClient(Handler)) {
-          Client.BaseAddress = player.BaseUri;
+          Client.BaseAddress = station.BaseUri;
 
           HttpRequestMessage Request = new HttpRequestMessage(HttpMethod.Post, $"jsonrpc?{JsonRpcFullname}");
           string JsonContent = RequestParameters.ToJson();
@@ -80,7 +82,7 @@ namespace KodiRemoteLib {
           string ResponseAsString="";
 
           try {
-            HttpResponseMessage Response = await Client.SendAsync(Request).ConfigureAwait(false);
+            HttpResponseMessage Response = await Client.SendAsync(Request);
             ResponseAsString = await Response.Content.ReadAsStringAsync();
           } catch (Exception ex) {
             Trace.WriteLine($"Problem during HTTP command : {ex.Message}");
@@ -92,6 +94,14 @@ namespace KodiRemoteLib {
         }
       }
 
+    }
+
+    public void UnsafeOnCompleted(Action continuation) {
+      throw new NotImplementedException();
+    }
+
+    public void OnCompleted(Action continuation) {
+      throw new NotImplementedException();
     }
   }
 }

@@ -19,32 +19,36 @@ namespace KodiRemoteConsole {
     }
 
     static void Test() {
-      using (KodiPlayer CurrentKodiPlayer = new KodiPlayer("OSMC", "osmc.newnet.priv", 8080)) {
+      using (IKodiStation KodiStation = new TKodiStation("OSMC", "osmc.newnet.priv", 8080)) {
 
-        Trace.WriteLine($"Kodi player {CurrentKodiPlayer.Name} is named {CurrentKodiPlayer.DnsName} and its IP is {CurrentKodiPlayer.Ip.AddressList.First().MapToIPv4().ToString()}");
-        KodiResponse_ActivePlayer RunningPlayer = null;
+        Trace.WriteLine($"Kodi station {KodiStation.Name} is named {KodiStation.DnsName} and its IP is {KodiStation.Ip}");
 
-        if (CurrentKodiPlayer.ActivePlayers.Count > 0) {
-          RunningPlayer = CurrentKodiPlayer.ActivePlayers.First();
-          Trace.WriteLine($"Player {RunningPlayer.PlayerId} of type {RunningPlayer.PlayerType} is playing");
-          //CurrentKodiPlayer.PlayerStop(RunningPlayer);
+        if (KodiStation.ActiveKodiPlayer == null) {
+          KodiStation.SetPartyMode();
         }
 
-        //CurrentKodiPlayer.SetPartyMode();
-        //if (CurrentKodiPlayer.ActivePlayers.Count > 0) {
-        //  RunningPlayer = CurrentKodiPlayer.ActivePlayers.First();
+        if (KodiStation.ActiveKodiPlayer != null) {
+          Trace.WriteLine($"Player {KodiStation.ActiveKodiPlayer.KodiPlayerType.Value} is active with the ID {KodiStation.ActiveKodiPlayer.Id}");
+          using (IKodiPlayer RunningPlayer = KodiStation.ActiveKodiPlayer) {
+            RunningPlayer.PlayerPlay();
+          }
+        }
+
+        //if (KodiStation.ActivePlayers.Count > 0) {
+        //  RunningPlayer = KodiStation.ActivePlayers.First();
         //  Trace.WriteLine($"Player {RunningPlayer.PlayerId} of type {RunningPlayer.PlayerType} is playing");
-        //  CurrentKodiPlayer.PlayerPlay(RunningPlayer);
+        //  KodiStation.PlayerStop(RunningPlayer);
+        //}
+        
+        //KodiStation.SetPartyMode();
+
+        //if (KodiStation.ActivePlayers.Count > 0) {
+        //  RunningPlayer = KodiStation.ActivePlayers.First();
+        //  Trace.WriteLine($"Player {RunningPlayer.PlayerId} of type {RunningPlayer.PlayerType} is playing");
+        //  KodiStation.PlayerPlay(RunningPlayer);
         //}
 
-        var RunningItem = CurrentKodiPlayer.GetCurrentItem(RunningPlayer).Result;
-
-
-        //Test = Player.Execute(new PlayList_GetPlayLists()).Result;
-
-        //Test = Player.Execute<string>(new Player_Play(CurrentPlayer.PlayerId)).Result;
-        //Thread.Sleep(5000);
-        //Test = Player.Execute(new Player_SetPartyMode()).Result;
+        //var RunningItem = KodiStation.GetCurrentItem(RunningPlayer).Result;
 
         //ConsoleExtension.Pause();
         Trace.WriteLine("Completed");

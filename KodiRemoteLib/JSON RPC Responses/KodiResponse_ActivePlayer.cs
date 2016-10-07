@@ -6,20 +6,25 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace KodiRemoteLib {
-  public class KodiResponse_ActivePlayer : JsonRpcResponseBase {
+  public class KodiResponse_ActivePlayers : JsonRpcResponseBase {
 
-    public int PlayerId { get; set; }
-    public string PlayerType { get; set; }
-    public KodiResponse_ActivePlayer() { }
-    public KodiResponse_ActivePlayer(int playerId, string playerType) {
-      PlayerId = playerId;
-      PlayerType = playerType;
-    }
+    public Dictionary<int, string> ActivePlayers { get; } = new Dictionary<int, string>();
+
+    public KodiResponse_ActivePlayers() { }
 
     public override void Initialize(string jsonData) {
-      var JsonResult = JObject.Parse(jsonData);
-      try { PlayerId = (int)JsonResult.SelectToken("result[0].playerid"); } catch { PlayerId = -1; }
-      try { PlayerType = (string)JsonResult.SelectToken("result[0].type"); } catch { PlayerType = ""; }
+      var JsonParse = JObject.Parse(jsonData);
+      List<JToken> Results = JsonParse.SelectTokens("result").ToList();
+      foreach(JToken ResultItem in Results) {
+        try {
+          int PlayerId = (int)ResultItem[0].SelectToken("playerid");
+          string PlayerType = (string)ResultItem[0].SelectToken("type");
+
+          ActivePlayers.Add(PlayerId, PlayerType);
+          
+        } catch {}
+      }
+      
     }
 
   }

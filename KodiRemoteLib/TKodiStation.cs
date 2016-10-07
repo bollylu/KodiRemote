@@ -12,42 +12,43 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace KodiRemoteLib {
-  public class KodiPlayer : IKodiPlayer, IDisposable {
+  public class TKodiStation : IKodiStation {
 
     #region --- Public properties ------------------------------------------------------------------------------
     public string Name { get; set; }
     public string DnsName { get; set; }
-    public IPHostEntry Ip { get; set; }
+    public IPHostEntry IpHostEntry { get; set; } = new IPHostEntry();
+    public IPAddress Ip => IpHostEntry.AddressList.FirstOrDefault();
     public int Port { get; set; }
     public Uri BaseUri {
       get {
         return new Uri($"http://{DnsName}:{Port}");
       }
     }
-    public List<KodiResponse_ActivePlayer> ActivePlayers { get; set; } = new List<KodiResponse_ActivePlayer>(); 
+    public List<IKodiPlayer> KodiPlayers { get; } = new List<IKodiPlayer>();
+    public IKodiPlayer ActiveKodiPlayer => KodiPlayers.FirstOrDefault(x => x.IsActive);
     #endregion --- Public properties ---------------------------------------------------------------------------
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
-    public KodiPlayer() { }
+    public TKodiStation() { }
 
-    public KodiPlayer(string name, string dnsName, int port = 8080) {
+    public TKodiStation(string name, string dnsName, int port = 8080) {
       Initialize(name, dnsName, port);
     }
 
     private void Initialize(string name, string dnsName, int port) {
       Name = name;
       DnsName = dnsName;
-      Ip = Dns.GetHostEntry(dnsName);
+      IpHostEntry = Dns.GetHostEntry(dnsName);
       Port = port;
 
-      ActivePlayers.Clear();
-      Player_GetActivePlayers RpcPlayerGetActivePlayers = new Player_GetActivePlayers();
-      KodiResponse_ActivePlayer CurrentPlayer = RpcPlayerGetActivePlayers.Execute<KodiResponse_ActivePlayer>(this).Result;
-      ActivePlayers.Add(CurrentPlayer);
+      GetActivePlayers();
     }
 
+
+
     public void Dispose() {
-      
+
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
 
@@ -90,36 +91,59 @@ namespace KodiRemoteLib {
     //  }
     //}
 
-    public async void PlayerStop(KodiResponse_ActivePlayer player) {
-      Player_Stop RpcPlayerStop = new Player_Stop(player.PlayerId);
-      await RpcPlayerStop.Execute<JsonRpcResponseEmpty>(this);
-    }
+    //public async void PlayerStop(KodiResponse_ActivePlayers player) {
+    //  Player_Stop RpcPlayerStop = new Player_Stop(player.PlayerId);
+    //  await RpcPlayerStop.Execute<JsonRpcResponseEmpty>(this);
+    //}
 
-    public async void PlayerPlay(KodiResponse_ActivePlayer player) {
-      Player_Play RpcPlayerPlay = new Player_Play(player.PlayerId);
-      await RpcPlayerPlay.Execute<JsonRpcResponseEmpty>(this);
-    }
+    //public async void PlayerPlay(KodiResponse_ActivePlayers player) {
+    //  Player_Play RpcPlayerPlay = new Player_Play(player.PlayerId);
+    //  await RpcPlayerPlay.Execute<JsonRpcResponseEmpty>(this);
+    //}
 
-    public async void PlayerPause(KodiResponse_ActivePlayer player) {
-      Player_Pause RpcPlayerPause = new Player_Pause(player.PlayerId);
-      await RpcPlayerPause.Execute<JsonRpcResponseEmpty>(this);
-    }
+    //public async void PlayerPause(KodiResponse_ActivePlayers player) {
+    //  Player_Pause RpcPlayerPause = new Player_Pause(player.PlayerId);
+    //  await RpcPlayerPause.Execute<JsonRpcResponseEmpty>(this);
+    //}
 
-    public async void SetPartyMode() {
-      Player_SetPartyMode RpcPlayerSetPartyMode = new Player_SetPartyMode();
-      await RpcPlayerSetPartyMode.Execute<JsonRpcResponseEmpty>(this);
-      ActivePlayers.Clear();
+    public async Task GetActivePlayers() {
+      KodiPlayers.Clear();
       Player_GetActivePlayers RpcPlayerGetActivePlayers = new Player_GetActivePlayers();
-      KodiResponse_ActivePlayer CurrentPlayer = RpcPlayerGetActivePlayers.Execute<KodiResponse_ActivePlayer>(this).Result;
-      ActivePlayers.Add(CurrentPlayer);
+      //KodiResponse_ActivePlayers CurrentPlayers = RpcPlayerGetActivePlayers.Execute<KodiResponse_ActivePlayers>(this).Result;
+      await RpcPlayerGetActivePlayers.Execute<KodiResponse_ActivePlayers>(this)
+        .ContinueWith(t => {
+          foreach (KeyValuePair<int, string> KodiPlayerItem in t.Result.ActivePlayers) {
+            if (KodiPlayerItem.Value == TKodiPlayerType.Audio.Value) {
+              KodiPlayers.Add(new TKodiPlayerAudio(this, KodiPlayerItem.Key));
+              continue;
+
+            } else if (KodiPlayerItem.Value == TKodiPlayerType.Video.Value) {
+              KodiPlayers.Add(new TKodiPlayerVideo(this, KodiPlayerItem.Key));
+              continue;
+
+            }
+          }
+        }
+      );
+
     }
 
-    public async Task<KodiResponse_CurrentlyPlayedItem> GetCurrentItem(KodiResponse_ActivePlayer player) {
-      string[] Properties = new string[] { "title", "artist" };
-      Player_GetItem RpcPlayerGetItem = new Player_GetItem(Properties, player.PlayerId);
-      KodiResponse_CurrentlyPlayedItem CurrentItem = await RpcPlayerGetItem.Execute<KodiResponse_CurrentlyPlayedItem>(this);
-      return CurrentItem;
+    public async Task SetPartyMode() {
+      Player_SetPartyMode RpcPlayerSetPartyMode = new Player_SetPartyMode();
+      await RpcPlayerSetPartyMode.Execute<JsonRpcResponseEmpty>(this)
+        .ContinueWith(async t => {
+          await GetActivePlayers();
+        }
+      );
+
     }
+
+    //public async Task<KodiResponse_CurrentlyPlayedItem> GetCurrentItem(KodiResponse_ActivePlayers player) {
+    //  string[] Properties = new string[] { "title", "artist" };
+    //  Player_GetItem RpcPlayerGetItem = new Player_GetItem(Properties, player.PlayerId);
+    //  KodiResponse_CurrentlyPlayedItem CurrentItem = await RpcPlayerGetItem.Execute<KodiResponse_CurrentlyPlayedItem>(this);
+    //  return CurrentItem;
+    //}
 
     //#region --- Singletons --------------------------------------------
     //public Player_GetActivePlayers RPC_Player_GetActivePlayer {

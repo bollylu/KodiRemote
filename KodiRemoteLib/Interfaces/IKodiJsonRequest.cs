@@ -15,5 +15,7 @@ namespace KodiRemoteLib {
     Dictionary<string, object> KodiParameters { get; }
 
     int Id { get; set; }
+
+    //IKodiJsonResponse Execute<IKodiJsonResponse>(TKodiStation station);
   }
 }
