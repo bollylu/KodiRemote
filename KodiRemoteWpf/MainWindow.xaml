@@ -73,9 +73,9 @@
     <Grid Grid.Row="1">
 
       <Grid.RowDefinitions>
-        <RowDefinition />
-        <RowDefinition />
-        <RowDefinition />
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="auto"/>
       </Grid.RowDefinitions>
 
       <Grid Grid.Row="0">
