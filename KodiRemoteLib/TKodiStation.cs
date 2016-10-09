@@ -33,16 +33,16 @@ namespace KodiRemoteLib {
     public TKodiStation() { }
 
     public TKodiStation(string name, string dnsName, int port = 8080) {
-      Initialize(name, dnsName, port);
+      Task.Run(() => Initialize(name, dnsName, port)).Wait();
     }
 
-    private void Initialize(string name, string dnsName, int port) {
+    private async Task Initialize(string name, string dnsName, int port) {
       Name = name;
       DnsName = dnsName;
       IpHostEntry = Dns.GetHostEntry(dnsName);
       Port = port;
 
-      GetActivePlayers();
+      await GetActivePlayers();
     }
 
 

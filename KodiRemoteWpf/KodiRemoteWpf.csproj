@@ -67,6 +67,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="TRelayCommand.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -126,6 +127,13 @@
   <ItemGroup>
     <Resource Include="Pictures\ButtonPlay.png" />
     <Resource Include="Pictures\ButtonStop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Pictures\FileOpen.png" />
+    <Resource Include="Pictures\FileQuit.png" />
+    <Resource Include="Pictures\folder.png" />
+    <Resource Include="Pictures\Help.png" />
+    <Resource Include="Pictures\refresh.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

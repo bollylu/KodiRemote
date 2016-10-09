@@ -23,9 +23,9 @@ namespace KodiRemoteConsole {
 
         Trace.WriteLine($"Kodi station {KodiStation.Name} is named {KodiStation.DnsName} and its IP is {KodiStation.Ip}");
 
-        if (KodiStation.ActiveKodiPlayer == null) {
+        //if (KodiStation.ActiveKodiPlayer == null) {
           KodiStation.SetPartyMode();
-        }
+        //}
 
         if (KodiStation.ActiveKodiPlayer != null) {
           Trace.WriteLine($"Player {KodiStation.ActiveKodiPlayer.KodiPlayerType.Value} is active with the ID {KodiStation.ActiveKodiPlayer.Id}");
