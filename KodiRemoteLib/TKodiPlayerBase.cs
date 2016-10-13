@@ -21,12 +21,12 @@ namespace KodiRemoteLib {
       KodiPlayerType = null;
     }
 
-    public async void PlayerStop() {
+    public async Task PlayerStop() {
       Player_Stop RpcPlayerStop = new Player_Stop(Id);
       await RpcPlayerStop.Execute<JsonRpcResponseEmpty>(Station);
     }
 
-    public async void PlayerPlay() {
+    public async Task PlayerPlay() {
       Player_Play RpcPlayerPlay = new Player_Play(Id);
       await RpcPlayerPlay.Execute<JsonRpcResponseEmpty>(Station);
     }
@@ -36,9 +36,16 @@ namespace KodiRemoteLib {
       await RpcPlayerPause.Execute<JsonRpcResponseEmpty>(Station);
     }
 
-    public async void PlayerPlayPause() {
+    public async Task PlayerPlayPause() {
       Player_PlayPause RpcPlayerPlayPause = new Player_PlayPause(Id);
       await RpcPlayerPlayPause.Execute<JsonRpcResponseEmpty>(Station);
+    }
+
+    public virtual async Task<IKodiItem> GetCurrentItem() {
+      //string[] Properties = new string[] { "title", "artist" };
+      //Player_GetItem RpcPlayerGetItem = new Player_GetItem(Properties, Id);
+      //KodiResponse_CurrentlyPlayedItem CurrentItem = await RpcPlayerGetItem.Execute<KodiResponse_CurrentlyPlayedItem>(Station);
+      return await Task.FromResult<IKodiItem>(null);
     }
   }
 }

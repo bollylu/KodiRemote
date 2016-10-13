@@ -10,9 +10,11 @@ namespace KodiRemoteLib {
     TKodiPlayerType KodiPlayerType { get; }
     bool IsActive { get; }
 
-    void PlayerStop();
+    Task PlayerStop();
     Task PlayerPause();
-    void PlayerPlayPause();
-    void PlayerPlay();
+    Task PlayerPlayPause();
+    Task PlayerPlay();
+
+    Task<IKodiItem> GetCurrentItem();
   }
 }

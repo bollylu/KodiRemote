@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EKodiPlayerType.cs" />
+    <Compile Include="Interfaces\IKodiItem.cs" />
     <Compile Include="Interfaces\IKodiJsonRequest.cs" />
     <Compile Include="Interfaces\IKodiJsonResponse.cs" />
     <Compile Include="Interfaces\IKodiPlayer.cs" />
@@ -59,6 +60,8 @@
     <Compile Include="JSON RPC Responses\JsonRpcResponseEmpty.cs" />
     <Compile Include="JSON RPC Responses\KodiResponse_CurrentlyPlayedItem.cs" />
     <Compile Include="JsonExtensionMethods.cs" />
+    <Compile Include="TKodiItemAudio.cs" />
+    <Compile Include="TKodiItemBase.cs" />
     <Compile Include="TKodiPlayerAudio.cs" />
     <Compile Include="TKodiPlayerBase.cs" />
     <Compile Include="TKodiPlayerType.cs" />

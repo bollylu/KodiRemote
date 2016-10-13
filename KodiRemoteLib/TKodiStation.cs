@@ -17,6 +17,11 @@ namespace KodiRemoteLib {
     #region --- Public properties ------------------------------------------------------------------------------
     public string Name { get; set; }
     public string DnsName { get; set; }
+    public string DisplayName {
+      get {
+        return $"{Name} - {DnsName}:{Port}";
+      }
+    }
     public IPHostEntry IpHostEntry { get; set; } = new IPHostEntry();
     public IPAddress Ip => IpHostEntry.AddressList.FirstOrDefault();
     public int Port { get; set; }
@@ -27,30 +32,32 @@ namespace KodiRemoteLib {
     }
     public List<IKodiPlayer> KodiPlayers { get; } = new List<IKodiPlayer>();
     public IKodiPlayer ActiveKodiPlayer => KodiPlayers.FirstOrDefault(x => x.IsActive);
+
+    public bool IsConnected {
+      get {
+        return ActiveKodiPlayer != null;
+      }
+    }
     #endregion --- Public properties ---------------------------------------------------------------------------
 
     #region --- Constructor(s) ---------------------------------------------------------------------------------
     public TKodiStation() { }
 
     public TKodiStation(string name, string dnsName, int port = 8080) {
-      Task.Run(() => Initialize(name, dnsName, port)).Wait();
-    }
-
-    private async Task Initialize(string name, string dnsName, int port) {
       Name = name;
       DnsName = dnsName;
       IpHostEntry = Dns.GetHostEntry(dnsName);
       Port = port;
-
-      await GetActivePlayers();
     }
-
-
 
     public void Dispose() {
 
     }
     #endregion --- Constructor(s) ------------------------------------------------------------------------------
+
+    public async Task Connect() {
+      await GetActivePlayers().ConfigureAwait(false);
+    }
 
     //public async Task<T> Execute<T>(JsonRpcRequestBase kodiRequest) {
 
@@ -109,7 +116,6 @@ namespace KodiRemoteLib {
     public async Task GetActivePlayers() {
       KodiPlayers.Clear();
       Player_GetActivePlayers RpcPlayerGetActivePlayers = new Player_GetActivePlayers();
-      //KodiResponse_ActivePlayers CurrentPlayers = RpcPlayerGetActivePlayers.Execute<KodiResponse_ActivePlayers>(this).Result;
       await RpcPlayerGetActivePlayers.Execute<KodiResponse_ActivePlayers>(this)
         .ContinueWith(t => {
           foreach (KeyValuePair<int, string> KodiPlayerItem in t.Result.ActivePlayers) {
@@ -124,7 +130,7 @@ namespace KodiRemoteLib {
             }
           }
         }
-      );
+      ).ConfigureAwait(false);
 
     }
 

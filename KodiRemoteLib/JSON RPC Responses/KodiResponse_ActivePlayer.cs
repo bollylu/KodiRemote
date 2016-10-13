@@ -13,6 +13,9 @@ namespace KodiRemoteLib {
     public KodiResponse_ActivePlayers() { }
 
     public override void Initialize(string jsonData) {
+      if (string.IsNullOrWhiteSpace(jsonData)) {
+        return;
+      }
       var JsonParse = JObject.Parse(jsonData);
       List<JToken> Results = JsonParse.SelectTokens("result").ToList();
       foreach(JToken ResultItem in Results) {

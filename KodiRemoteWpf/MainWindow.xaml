@@ -74,24 +74,69 @@
 
       <Grid.RowDefinitions>
         <RowDefinition Height="auto" />
+        <RowDefinition Height="auto" />
+        <RowDefinition Height="auto" />
         <RowDefinition Height="*" />
         <RowDefinition Height="auto" />
       </Grid.RowDefinitions>
 
       <Grid Grid.Row="0">
-        <Button Content="{Binding Path=Connection}"
-                Visibility="{Binding Path=IsNotConnected, Converter={StaticResource BoolToVisibility}}"
-                IsEnabled="{Binding Path=IsNotConnected}"
-                Command="{Binding Path=CommandConnect}"
-                HorizontalAlignment="Center"
-                Margin="5"
-                HorizontalContentAlignment="Center" />
-        <TextBlock Text="{Binding Path=Connection}"
-                   HorizontalAlignment="Center"
-                   Visibility="{Binding Path=IsConnected, Converter={StaticResource BoolToVisibility}}"></TextBlock>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+          </Grid.ColumnDefinitions>
+
+          <ComboBox ItemsSource="{Binding Path=AvailableKodiStations}"
+                    SelectedItem="{Binding Path=KodiStation}"
+                    Grid.Column="0"
+                    Margin="5"
+                    DisplayMemberPath="DisplayName" />
+
+          <TextBlock Text="{Binding Path=ConnectionName}"
+                     Grid.Column="1"
+                     Margin="5,5,0,5"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center" />
+          <Image Source="{Binding Path=PictureConnectionStatus}"
+                 Grid.Column="2"
+                 Width="16"
+                 Height="16"
+                 Margin="0,5,5,5" />
+        </Grid>
       </Grid>
 
       <Grid Grid.Row="1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Path=ActivePlayerDescription}"
+                   HorizontalAlignment="Center" />
+      </Grid>
+
+      <Grid Grid.Row="2">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Center">
+          <TextBlock Text="{Binding Path=CurrentArtists, TargetNullValue=''}"
+                     FontSize="24"
+                     Margin="5"
+                     Foreground="Blue"
+                     FontWeight="Black"
+                     HorizontalAlignment="Center" />
+          <TextBlock Text="{Binding Path=CurrentAlbum, TargetNullValue=''}"
+                     FontSize="16"
+                     Margin="5" />
+          <TextBlock Text="{Binding Path=CurrentFullTitle}"
+                     FontSize="16"
+                     Margin="5" />
+        </StackPanel>
+      </Grid>
+
+      <Grid Grid.Row="3">
         <Border BorderBrush="Aquamarine"
                 BorderThickness="1"
                 Margin="5">
@@ -101,7 +146,7 @@
         </Border>
       </Grid>
 
-      <Grid Grid.Row="2">
+      <Grid Grid.Row="4">
 
         <Grid.ColumnDefinitions>
           <ColumnDefinition />
@@ -122,10 +167,24 @@
 
         <Button Grid.Column="1"
                 Margin="10"
-                VerticalAlignment="Center">
+                VerticalAlignment="Center"
+                Command="{Binding Path=CommandPlay}"
+                Visibility="{Binding Path=PlayerPlayingVisibility}">
           <Button.Template>
             <ControlTemplate>
               <Image Source="{Binding Path=PictureButtonPlay}" />
+            </ControlTemplate>
+          </Button.Template>
+        </Button>
+
+        <Button Grid.Column="1"
+                Margin="10"
+                VerticalAlignment="Center"
+                Command="{Binding Path=CommandPause}"
+                Visibility="{Binding Path=PlayerPausedVisibility}">
+          <Button.Template>
+            <ControlTemplate>
+              <Image Source="{Binding Path=PictureButtonPause}" />
             </ControlTemplate>
           </Button.Template>
         </Button>

@@ -50,17 +50,16 @@ namespace KodiRemoteLib {
     public JsonRpcRequestBase() {
     }
 
-    public virtual Task<T> Execute<T>(IKodiStation station) where T : IKodiJsonResponse, new() {
+    public virtual async Task<T> Execute<T>(IKodiStation station) where T : IKodiJsonResponse, new() {
 
-      string Data = GetResponseString(station).Result;
+      string Data = await GetResponseString(station);
       if (typeof(T).Name == typeof(JsonRpcResponseEmpty).Name) {
-        return Task.FromResult<T>(default(T)) ;
+        return default(T) ;
       }
 
-      
       T RetVal = new T();
       RetVal.Initialize(Data);
-      return Task.FromResult<T>(RetVal);
+      return RetVal;
 
     }
 
