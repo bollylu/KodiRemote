@@ -2,6 +2,7 @@
 using KodiRemoteLib;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -62,7 +63,7 @@ namespace KodiRemoteWpf {
 
     public string CurrentTitle {
       get {
-        return _CurrentTitle;
+        return _CurrentTitle ?? "";
       }
       set {
         _CurrentTitle = value;
@@ -74,6 +75,9 @@ namespace KodiRemoteWpf {
 
     public string CurrentFullTitle {
       get {
+        if (string.IsNullOrWhiteSpace(CurrentTitle)) {
+          return "";
+        }
         return $"{CurrentTrack}. {CurrentTitle}";
       }
     }
@@ -163,7 +167,7 @@ namespace KodiRemoteWpf {
 
     public Visibility PlayerPausedVisibility {
       get {
-          return PlayerIsPaused ? Visibility.Collapsed : Visibility.Visible;
+        return PlayerIsPaused ? Visibility.Collapsed : Visibility.Visible;
       }
     }
 
@@ -201,6 +205,7 @@ namespace KodiRemoteWpf {
     #endregion Interface pictures
 
     public MainViewModel() : base() {
+      Debug.WriteLine("Creating MainViewModel");
       _Initialize();
       _InitializeCommands();
     }
@@ -213,6 +218,9 @@ namespace KodiRemoteWpf {
     private void _Initialize() {
       AvailableKodiStations.Add(new TKodiStation("Salon", "osmc.newnet.priv", 8080));
       AvailableKodiStations.Add(new TKodiStation("PC Luc", "lucwks6.newnet.priv", 8090));
+      if (App.InDesignMode) {
+        KodiStation = AvailableKodiStations.First();
+      }
     }
 
     private void _InitializeCommands() {

@@ -12,12 +12,15 @@
         Width="400">
   <Window.Resources>
     <clr:String x:Key="ImageNotFound">ImageNotFound</clr:String>
-    <local:MainViewModel x:Key="FakeMainWiewModel" />
     <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+    <local:MainViewModel x:Key="FakeMainViewModel"
+                         CurrentArtists="Queen"
+                         CurrentAlbum="Best of Queen"
+                         CurrentTrack="1"
+                         CurrentTitle="Radio Gaga" />
   </Window.Resources>
 
-  <Grid d:DataContext="{Binding Source={StaticResource FakeMainWiewModel}}">
-
+  <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
@@ -70,7 +73,8 @@
       </MenuItem>
     </Menu>
 
-    <Grid Grid.Row="1">
+    <Grid Grid.Row="1"
+          d:DataContext="{StaticResource FakeMainViewModel}">
 
       <Grid.RowDefinitions>
         <RowDefinition Height="auto" />
@@ -111,7 +115,7 @@
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <TextBlock Text="{Binding Path=ActivePlayerDescription}"
+        <TextBlock Text="{Binding Path=ActivePlayerDescription, Mode=OneWay}"
                    HorizontalAlignment="Center" />
       </Grid>
 
@@ -121,16 +125,16 @@
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical"
                     HorizontalAlignment="Center">
-          <TextBlock Text="{Binding Path=CurrentArtists, TargetNullValue=''}"
+          <TextBlock Text="{Binding Path=CurrentArtists, Mode=OneWay}"
                      FontSize="24"
                      Margin="5"
                      Foreground="Blue"
                      FontWeight="Black"
                      HorizontalAlignment="Center" />
-          <TextBlock Text="{Binding Path=CurrentAlbum, TargetNullValue=''}"
+          <TextBlock Text="{Binding Path=CurrentAlbum, Mode=OneWay}"
                      FontSize="16"
                      Margin="5" />
-          <TextBlock Text="{Binding Path=CurrentFullTitle}"
+          <TextBlock Text="{Binding Path=CurrentFullTitle, Mode=OneWay}"
                      FontSize="16"
                      Margin="5" />
         </StackPanel>
