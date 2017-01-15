@@ -183,6 +183,7 @@ namespace KodiRemoteWpf {
 
     public TRelayCommand CommandPause { get; private set; }
     public TRelayCommand CommandPlay { get; private set; }
+    public TRelayCommand CommandPlayRandom { get; private set; }
 
     #region Interface pictures
     public string ContactPicture { get { return App.GetPictureFullname("help"); } }
@@ -193,6 +194,7 @@ namespace KodiRemoteWpf {
     public string PictureButtonPause { get { return App.GetPictureFullname("ButtonPause"); } }
     public string PictureButtonPlay { get { return App.GetPictureFullname("ButtonPlay"); } }
     public string PictureButtonStop { get { return App.GetPictureFullname("ButtonStop"); } }
+    public string PictureButtonRandom { get { return App.GetPictureFullname("ButtonRandom"); } }
     public string PictureConnectionStatus {
       get {
         if (IsConnected) {
@@ -227,6 +229,7 @@ namespace KodiRemoteWpf {
       CommandConnect = new TRelayCommand<IKodiStation>((x) => { _CommandConnect(x); }, (x) => true);
       CommandPause = new TRelayCommand(async () => { await _CommandPause(); }, (x) => true);
       CommandPlay = new TRelayCommand(async () => { await _CommandPlay(); }, (x) => true);
+      CommandPlayRandom = new TRelayCommand(async () => { await _CommandPlayRandom(); }, _ => true);
 
       CommandHelpContact = new TRelayCommand(
         () => {
@@ -236,6 +239,15 @@ namespace KodiRemoteWpf {
       );
       CommandHelpAbout = new TRelayCommand(() => HelpAbout(), (x) => true);
 
+    }
+
+    private async Task _CommandPlayRandom() {
+      if (!IsConnected) {
+        return;
+      }
+      await KodiStation.ActiveKodiPlayer.PlayerPlayRandom();
+      CurrentPlayingItem = await KodiStation.ActiveKodiPlayer.GetCurrentItem() as TKodiItemAudio;
+      PlayerIsPaused = false;
     }
 
     private async Task _CommandPause() {
@@ -252,7 +264,7 @@ namespace KodiRemoteWpf {
       }
       await KodiStation.ActiveKodiPlayer.PlayerPlay();
       CurrentPlayingItem = await KodiStation.ActiveKodiPlayer.GetCurrentItem() as TKodiItemAudio;
-      PlayerIsPaused = !PlayerIsPaused;
+      PlayerIsPaused = false;
     }
 
     private async void _CommandConnect(IKodiStation kodiStation) {
@@ -265,8 +277,7 @@ namespace KodiRemoteWpf {
       }
       CurrentPlayingItem = await KodiStation.ActiveKodiPlayer.GetCurrentItem() as TKodiItemAudio;
     }
-
-
+    
     private void HelpAbout() {
       StringBuilder Usage = new StringBuilder();
       Usage.AppendLine(string.Format("KodiRemoteWpf v{0}", Assembly.GetEntryAssembly().GetName().Version.ToString()));

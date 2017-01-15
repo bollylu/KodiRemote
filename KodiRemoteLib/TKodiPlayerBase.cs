@@ -31,6 +31,11 @@ namespace KodiRemoteLib {
       await RpcPlayerPlay.Execute<JsonRpcResponseEmpty>(Station);
     }
 
+    public async Task PlayerPlayRandom() {
+      Player_SetPartyMode RpcPlayerPlayRandom = new Player_SetPartyMode(Id);
+      await RpcPlayerPlayRandom.Execute<JsonRpcResponseEmpty>(Station);
+    }
+
     public async Task PlayerPause() {
       Player_Pause RpcPlayerPause = new Player_Pause(Id);
       await RpcPlayerPause.Execute<JsonRpcResponseEmpty>(Station);

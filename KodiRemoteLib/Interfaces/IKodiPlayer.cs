@@ -14,6 +14,7 @@ namespace KodiRemoteLib {
     Task PlayerPause();
     Task PlayerPlayPause();
     Task PlayerPlay();
+    Task PlayerPlayRandom();
 
     Task<IKodiItem> GetCurrentItem();
   }
